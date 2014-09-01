@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:portalApi xmlns:p="http://portal.stepsoln.com/api/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://portal.stepsoln.com/api/1 portal_api.xsd ">
+  <p:ssoTokenPortalRequest>
+    <p:agentNumber>p:agentNumber</p:agentNumber>
+    <p:agencyNumber>p:agencyNumber</p:agencyNumber>
+    <p:userId>p:userId</p:userId>
+  </p:ssoTokenPortalRequest>
+  <p:transactionGUID>p:transactionGUID</p:transactionGUID>
+  <p:businessProcessId>p:businessProcessId</p:businessProcessId>
+  <p:transactionType>SSO_TOKEN_REQUEST</p:transactionType>
+  <p:signatureRequestSet>
+    <p:signatureRequest documentRef="idvalue0" order="0" signerPartyRef="idvalue0">
+      <p:status date="2001-12-31T12:00:00" type="SIGNATURE_PENDING"/>
+      <p:documentFields>
+        <p:documentField fieldNameInDocument="" prompt="" required="true" type="DATE">
+          <p:defaultValue>p:defaultValue</p:defaultValue>
+        </p:documentField>
+      </p:documentFields>
+    </p:signatureRequest>
+  </p:signatureRequestSet>
+  <p:documentReviewRequestSet>
+    <p:documentReviewRequest documentRef="idvalue0" order="0" partyRef="idvalue0">
+      <p:status date="2001-12-31T12:00:00" type="SIGNATURE_PENDING"/>
+    </p:documentReviewRequest>
+  </p:documentReviewRequestSet>
+  <p:documentSet>
+    <p:document id="idvalue0" sourceSystemID=""/>
+  </p:documentSet>
+  <p:partySet>
+    <p:party id="idvalue1" sourceSystemID="">
+      <p:firstName>p:firstName</p:firstName>
+      <p:lastName>p:lastName</p:lastName>
+      <p:emailAddress>p:emailAddress</p:emailAddress>
+      <p:securityQuestionSet>
+        <p:securityQuestion>
+          <p:questionText>p:questionText</p:questionText>
+          <p:answerText>p:answerText</p:answerText>
+        </p:securityQuestion>
+      </p:securityQuestionSet>
+    </p:party>
+  </p:partySet>
+  <p:uploadRequestSet>
+    <p:uploadRequest partyRef="idvalue0" sourceSystemID=""/>
+  </p:uploadRequestSet>
+  <p:response>
+    <p:transactionGUID>p:transactionGUID</p:transactionGUID>
+    <p:status>SUCCESS</p:status>
+  </p:response>
+  <p:group>
+    <p:groupCode>p:groupCode</p:groupCode>
+  </p:group>
+</p:portalApi>

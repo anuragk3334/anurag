@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://portal.stepsoln.com/api/1"
+	targetNamespace="http://portal.stepsoln.com/api/1" elementFormDefault="qualified">
+
+	<xs:simpleType name="transactionTypeConst">
+		<xs:annotation>
+			<xs:documentation>Valid Portal API Request Types</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SSO_TOKEN_REQUEST" />
+			<xs:enumeration value="SIGNATURE_REQUEST_PERSIST" />
+			<xs:enumeration value="SIGNATURE_REQUEST_STATUS_CHECK" />
+			<xs:enumeration value="SIGNATURE_REQUEST_STATUS_NOTIFY" />
+			<xs:enumeration value="DOCUMENT_UPLOAD_REQUEST_PERSIST" />
+			<xs:enumeration value="DOCUMENT_UPLOAD_REQUEST_STATUS_CHECK" />
+			<xs:enumeration value="DOCUMENT_UPLOAD_REQUEST_STATUS_NOTIFY" />
+			<xs:enumeration value="DOCUMENT_REVIEW_REQUEST_PERSIST" />
+			<xs:enumeration value="DOCUMENT_REVIEW_REQUEST_STATUS_CHECK" />
+			<xs:enumeration value="DOCUMENT_REVIEW_REQUEST_STATUS_NOTIFY" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="statusTypeConst">
+		<xs:annotation>
+			<xs:documentation>Status Types for requests</xs:documentation>
+			<xs:documentation>
+				SIGNATURE_PENDING - waiting for document to be
+				signed
+				SIGNATURE_COMPLETE - document get signed
+				DOCUMENT_REVIEW_PENDING - waiting for document to get reviewed
+				DOCUMENT_REVIEW_COMPLETE - document has been reviewed
+				UPLOAD_PENDING
+				- waiting for necessary documents to be uploaded
+				UPLOAD_READY -
+				documents uploaded and ready for review
+				UPLOAD_INREVIEW - documents
+				uploaded are being reviewed
+				UPLOAD_ACCEPTED - uploaded documents
+				accepted
+				UPLOAD_CANCELED - request canceled
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SIGNATURE_PENDING" />
+			<xs:enumeration value="SIGNATURE_COMPLETE" />
+			<xs:enumeration value="UPLOAD_PENDING" />
+			<xs:enumeration value="UPLOAD_READY" />
+			<xs:enumeration value="UPLOAD_INREVIEW" />
+			<xs:enumeration value="UPLOAD_ACCEPTED" />
+			<xs:enumeration value="UPLOAD_CANCELED" />
+			<xs:enumeration value="DOCUMENT_REVIEW_PENDING" />
+			<xs:enumeration value="DOCUMENT_REVIEW_COMPLETE" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="fillableDocumentFieldTypeConst">
+		<xs:annotation>
+			<xs:documentation>Types for fields for fillable documents (typically
+				PDFs)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DATE" />
+			<xs:enumeration value="STRING" />
+			<xs:enumeration value="SIGNATURE" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="responseStatusTypeConst">
+		<xs:annotation>
+			<xs:documentation>Status of the incoming call processing
+			</xs:documentation>
+			<xs:documentation>
+				SUCCESS - incoming data was processed successfully
+				FAILURE - processing of incoming data failed
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SUCCESS" />
+			<xs:enumeration value="FAILURE" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="carrierCodeTypeConst">
+		<xs:annotation>
+			<xs:documentation>Codes identifying Carriers</xs:documentation>
+			<xs:documentation>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FIDELITY" />
+			<xs:enumeration value="GERBER" />
+			<xs:enumeration value="IAC" />
+			<xs:enumeration value="ASSURITY" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="partyType">
+		<xs:sequence>
+			<xs:element name="firstName" type="xs:string" />
+			<xs:element name="lastName" type="xs:string" />
+			<xs:element name="emailAddress" type="xs:string" />
+			<xs:element name="securityQuestionSet" type="securityQuestionSet" />
+		</xs:sequence>
+		<xs:attribute name="sourceSystemID" use="required" type="xs:string" />
+		<xs:attribute name="id" use="required" type="xs:ID" />
+	</xs:complexType>
+
+
+	<xs:complexType name="securityQuestionSet">
+		<xs:sequence>
+			<xs:element name="securityQuestion" type="securityQuestionType"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ssoTokenPortalRequestType">
+		<xs:sequence>
+			<xs:element name="agentNumber" type="xs:string" />
+			<xs:element name="agencyNumber" type="xs:string" />
+			<xs:element name="userId" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="securityQuestionType">
+		<xs:sequence>
+			<xs:element name="questionText" type="xs:string" />
+			<xs:element name="answerText" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="fillableDocumentFieldSet">
+		<xs:sequence>
+			<xs:element name="documentField" type="fillableDocumentFieldType"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="fillableDocumentFieldType">
+		<xs:sequence>
+			<xs:element name="defaultValue" maxOccurs="1" type="xs:string" />
+		</xs:sequence>
+		<xs:attribute name="prompt" use="required" type="xs:string" />
+		<xs:attribute name="fieldNameInDocument" use="required"
+			type="xs:string" />
+		<xs:attribute name="type" use="required"
+			type="fillableDocumentFieldTypeConst" />
+		<xs:attribute name="required" use="required" type="xs:boolean" />
+		<xs:attribute name="dateFormat" type="xs:string" />
+		<xs:attribute name="readOnly" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="signatureRequestType">
+		<xs:sequence>
+			<xs:element name="status" type="statusType" />
+			<xs:element name="carrierCode" type="carrierCodeTypeConst"
+				minOccurs="0" />
+			<xs:element name="documentFields" type="fillableDocumentFieldSet" />
+		</xs:sequence>
+		<xs:attribute name="documentRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="order" use="required" type="xs:integer" />
+		<xs:attribute name="signerPartyRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="expires" type="xs:dateTime" />
+		<xs:attribute name="sourceSystemID" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="documentReviewRequestType">
+		<xs:sequence>
+			<xs:element name="status" type="statusType" />
+			<xs:element name="carrierCode" type="carrierCodeTypeConst"
+				minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="documentRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="partyRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="order" use="required" type="xs:integer" />
+		<xs:attribute name="expires" type="xs:dateTime" />
+		<xs:attribute name="sourceSystemID" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="statusType">
+		<xs:attribute name="date" type="xs:dateTime" use="required" />
+		<xs:attribute name="type" use="required" type="statusTypeConst" />
+	</xs:complexType>
+
+	<xs:complexType name="signatureType">
+		<xs:attribute name="date" use="required" />
+		<xs:attribute name="documentRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="partyRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="type" use="required" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="documentType">
+		<xs:sequence minOccurs="0">
+			<xs:element name="date" type="xs:dateTime" minOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="1" />
+			<xs:element name="size" type="xs:integer" minOccurs="1" />
+			<xs:element name="contentType" type="xs:string" minOccurs="1" />
+			<xs:element name="data" type="xs:string" minOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="id" use="required" type="xs:ID" />
+		<xs:attribute name="sourceSystemID" use="required" type="xs:string" />
+		<xs:attribute name="encoding" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="uploadRequestType">
+		<xs:sequence minOccurs="0">
+			<xs:element name="description" type="xs:string" minOccurs="1" />
+			<xs:element name="title" type="xs:string" minOccurs="1" />
+			<xs:element name="docCode" type="xs:string" minOccurs="1" />
+			<xs:element name="requestor" type="xs:string" minOccurs="1" />
+			<xs:element name="initialNote" type="xs:string" minOccurs="1" />
+			<xs:element name="documentRef" type="xs:IDREF" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="status" type="statusType" />
+			<xs:element name="carrierCode" type="carrierCodeTypeConst"
+				minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="partyRef" use="required" type="xs:IDREF" />
+		<xs:attribute name="sourceSystemID" use="required" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="requestSetTokenType">
+		<xs:sequence>
+			<xs:element name="contentType" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="signatureRequestSetType">
+		<xs:sequence>
+			<xs:element name="signatureRequest" maxOccurs="unbounded"
+				type="signatureRequestType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="documentReviewRequestSetType">
+		<xs:sequence>
+			<xs:element name="documentReviewRequest" maxOccurs="unbounded"
+				type="documentReviewRequestType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="uploadRequestSetType">
+		<xs:sequence>
+			<xs:element name="uploadRequest" maxOccurs="unbounded"
+				type="uploadRequestType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="documentSetType">
+		<xs:sequence>
+			<xs:element name="document" maxOccurs="unbounded" type="documentType" />
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="partySetType">
+		<xs:sequence>
+			<xs:element name="party" maxOccurs="unbounded" type="partyType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="portalApi">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ssoTokenPortalRequest" type="ssoTokenPortalRequestType" />
+				<xs:element name="transactionGUID" type="xs:string" />
+				<xs:element name="businessProcessId" type="xs:string"
+					minOccurs="1" />
+				<xs:element name="transactionType" type="transactionTypeConst"></xs:element>
+				<xs:element name="signatureRequestSet" type="signatureRequestSetType"></xs:element>
+				<xs:element name="documentReviewRequestSet" type="documentReviewRequestSetType"></xs:element>
+				<xs:element name="documentSet" type="documentSetType"></xs:element>
+				<xs:element name="partySet" type="partySetType"></xs:element>
+				<xs:element name="uploadRequestSet" type="uploadRequestSetType"></xs:element>
+				<xs:element name="response" type="portalResponseType" />
+				<xs:element name="group" type="groupType"></xs:element>
+				<xs:element name="error" type="ErrorType" minOccurs="0"
+					maxOccurs="unbounded" />
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="groupType">
+		<xs:sequence>
+			<xs:element name="groupCode" type="xs:string"></xs:element>
+			<xs:element name="groupMember" type="groupMemberType"
+				minOccurs="0" maxOccurs="unbounded"></xs:element>
+			<xs:element name="autoEnrollmentRequest" type="groupMemberType"
+				minOccurs="0" maxOccurs="unbounded"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="groupMemberType">
+		<xs:sequence>
+			<xs:element name="memberId" type="xs:int" />
+			<xs:element name="enrollmentYears" type="enrollmentYearsType"
+				minOccurs="1" maxOccurs="unbounded" />
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="enrollmentYearsType">
+		<xs:sequence>
+			<xs:element name="year" type="xs:string" />
+			<xs:element name="startDate" type="xs:dateTime"></xs:element>
+			<xs:element name="dueDate" type="xs:dateTime"></xs:element>
+			<xs:element name="enrolled" type="xs:boolean"></xs:element>
+			<xs:element name="memberDetails" type="groupMemberDetails"></xs:element>
+			<xs:element name="benefits" type="benefitsType"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="groupMemberDetails">
+		<xs:sequence>
+
+			<xs:element name="joiningDate" type="xs:date" minOccurs="1" />
+			<xs:element name="terminationDate" type="xs:date" />
+			<xs:element name="memberShipStatus" type="memberShipStatusType" />
+			<xs:element name="employmentStatus" type="employmentStatusType"
+				minOccurs="1" />
+			<xs:element name="personalDetails" type="personDetailsType"
+				minOccurs="1" />
+			<xs:element name="customAttributes" type="CustomAttributeType"
+				minOccurs="0" maxOccurs="unbounded" />
+
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="benefitsType">
+		<xs:sequence>
+			<xs:element name="enrollYear" type="xs:string" />
+			<xs:element name="enrollGroup" type="xs:string" />
+			<xs:element name="policyNumber" type="xs:string" />
+			<xs:element name="enrolledBenefits" type="enrolledBenefitsType"
+				minOccurs="1" maxOccurs="unbounded"></xs:element>
+			<xs:element name="dependantsDetails" type="dependantsDetailsType"
+				minOccurs="1" maxOccurs="unbounded"></xs:element>
+			<xs:element name="beneficiariesDetails" type="beneficiariesDetailsType"
+				minOccurs="1" maxOccurs="unbounded"></xs:element>
+		</xs:sequence>
+
+
+	</xs:complexType>
+
+
+
+
+	<xs:complexType name="enrolledBenefitsType">
+		<xs:sequence>
+			<xs:element name="planName" type="xs:string"></xs:element>
+			<xs:element name="planOptionsName" type="xs:string" />
+			<xs:element name="coverageAmount" type="xs:string" />
+			<xs:element name="contributionType" type="xs:string" />
+			<xs:element name="employerContribution" type="xs:string" />
+			<xs:element name="employeeContribution" type="xs:string" />
+
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="dependantsDetailsType">
+		<xs:sequence>
+			<xs:element name="relationship" type="xs:string" />
+			<xs:element name="dependantPersonalDetails" type="personDetailsType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="beneficiariesDetailsType">
+		<xs:sequence>
+			<xs:element name="relationship" type="xs:string" />
+			<xs:element name="percentage" type="xs:string" />
+			<xs:element name="beneficiaryPersonalDetails" type="personDetailsType" />
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="portalResponseType">
+		<xs:sequence>
+			<xs:element name="transactionGUID" type="xs:string" />
+			<xs:element name="status" type="responseStatusTypeConst"
+				minOccurs="1" />
+			<xs:element name="errorCode" type="xs:string" minOccurs="0" />
+			<xs:element name="errorMessage" type="xs:string"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<xs:simpleType name="employmentStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SALARIED"></xs:enumeration>
+			<xs:enumeration value="NON_SALARIED"></xs:enumeration>
+
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="memberShipStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTIVE"></xs:enumeration>
+			<xs:enumeration value="INACTIVE"></xs:enumeration>
+			<xs:enumeration value="NONE"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="CustomAttributeType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="personDetailsType">
+		<xs:sequence>
+			<xs:element name="firstName" type="xs:string" />
+			<xs:element name="middleName" type="xs:string" minOccurs="0" />
+			<xs:element name="lastName" type="xs:string" />
+			<xs:element name="salutation" type="xs:string" />
+			<xs:element name="nickname" type="xs:string" />
+			<xs:element name="gender" type="xs:string" />
+			<xs:element name="dateOfBirth" type="xs:dateTime" />
+			<xs:element name="primarySecurityType" type="xs:string" />
+			<xs:element name="secondarySecurityType" type="xs:string"
+				minOccurs="0" />
+			<xs:element name="primarySecurityNo" type="xs:string" />
+			<xs:element name="secondarySecurityNo" type="xs:string"
+				minOccurs="0" />
+			<xs:element name="emailAddress" type="xs:string"
+				minOccurs="0" />
+			<xs:element name="address" type="addressDetailsType"
+				minOccurs="0" />
+			<xs:element name="contactNo" type="contactsDetailsType"
+				minOccurs="0" />
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="contactsDetailsType">
+		<xs:sequence>
+			<xs:element name="officePhone" type="xs:string" minOccurs="0" />
+			<xs:element name="mobilePhone" type="xs:string" minOccurs="0" />
+			<xs:element name="fax" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="addressDetailsType">
+		<xs:sequence>
+			<xs:element name="addressline1" type="xs:string"
+				minOccurs="0" />
+			<xs:element name="addressline2" type="xs:string"
+				minOccurs="0" />
+			<xs:element name="addressline3" type="xs:string"
+				minOccurs="0" />
+			<xs:element name="city" type="xs:string" minOccurs="0" />
+			<xs:element name="state" type="xs:string" minOccurs="0" />
+			<xs:element name="zip" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="ErrorType">
+		<xs:sequence>
+			<xs:element name="message" type="xs:string" />
+			<xs:element name="details" type="xs:string" minOccurs="0" />
+			<xs:element name="code" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						Error code can be used to debugging a response
+						message. These codes will need to be uniquely defined for each
+						application.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
