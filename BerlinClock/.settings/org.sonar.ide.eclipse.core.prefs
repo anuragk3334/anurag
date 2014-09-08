@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+extraProperties=sonar.host.url\=http\://localhost\:9000\r\nsonar.jdbc.password\=test123\r\nsonar.jdbc.username\=swapnilb\r\nsonar.jdbc.url\=jdbc\:sqlserver\://172.19.101.121\:2301;instanceName\=sqlexpress;database\=swapnil_db;integratedSecurity\=false;user\=swapnilb;password\=test123;applicationName\=glicenv_connection
+projectKey=com.anurag\:BerlinClock
+serverUrl=http\://localhost\:9000
+version=2
