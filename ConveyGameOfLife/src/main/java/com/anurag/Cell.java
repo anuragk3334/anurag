@@ -16,7 +16,7 @@ public interface Cell {
 
 	/**
 	 * begin evolution period which can change the cell value/state which
-	 * changes the current state and copy to next state
+	 * changes the current state and copy to next state12312333
 	 */
 	void startEvolution();
 
